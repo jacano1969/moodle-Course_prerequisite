@@ -1,0 +1,21 @@
+--- course/lib.php	2012-11-06 11:35:01.279656852 +0500
++++ course/lib.php	2012-11-06 11:34:44.100646198 +0500
+@@ -4877,7 +4877,17 @@ function update_course($data, $editoropt
+     if (isset($data->allowedmods)) {
+         update_restricted_mods($course, $data->allowedmods);
+     }
+-    
++    //Added By Hina Yousuf
++    // update course conditions @EC SMC
++
++    if (isset($data->courseconditiongradegroup)) {
++
++        if (@include_once($CFG->libdir . "/courseconditionlib.php")) {
++
++            coursecompletion_updatecourse($course, $data->courseconditiongradegroup);
++        }
++    }
++    //end
+     // Save any custom role names.
+     save_local_role_names($course->id, $data);
+ 

@@ -1,0 +1,49 @@
+--- course/edit_form.php	2012-11-06 10:57:01.246430145 +0500
++++ course/edit_form.php	2012-11-06 10:55:59.414386073 +0500
+@@ -329,7 +329,19 @@ $credithoursmenu=array( '1'=>'1',
+             }
+         }
+ 
++// CoursePrerequisite Block
++	        // Course based restrictions @EC SMC
+ 
++        if (!empty($CFG->enableavailability)) {
++
++            if (@include_once($CFG->libdir."/courseconditionlib.php")) {
++
++                coursecompletion_formelements( $course, $this, $mform );
++
++            }
++
++        }
++//end
+ 
+ //--------------------------------------------------------------------------------
+         $this->add_action_buttons();
+@@ -358,7 +370,26 @@ $credithoursmenu=array( '1'=>'1',
+             $gr_el =& $mform->getElement('defaultgroupingid');
+             $gr_el->load($options);
+         }
+
++
++
++        // Availability conditions @EC SMC
++
++        global $CFG;
++
++        if (!empty($CFG->enableavailability) && $courseid = $mform->getElementValue('id')) {
++
++            if (@include_once( $CFG->libdir . "/courseconditionlib.php")) {
++
++                coursecompletion_definition_after_data( $courseid, $mform );
++
++            }
++
++        }
++
++
+ 
++//end
+     }
+ 
+ 

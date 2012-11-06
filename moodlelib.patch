@@ -1,0 +1,28 @@
+--- lib/moodlelib.php	2012-11-06 10:46:31.859067653 +0500
++++ lib/moodlelib.php	2012-11-06 10:48:15.185121564 +0500
+@@ -2470,25 +2470,6 @@ function require_login($courseorid = NUL
+             }
+         }
+     }
+-//Added By Hina Yousuf-Vourse Prerequisite
+-//@EC SMC before enroling we should check if course conditions have been met
+-
+-    if (!($course->id==SITEID) && !empty($CFG->enableavailability) && !has_capability('moodle/course:viewhiddenactivities', $coursecontext)) {
+-
+-        if (@include_once($CFG->libdir."/courseconditionlib.php")) {
+-
+-          $hasoutstanding = coursecompletion_checkcompletion( $course );
+-
+-          if ($hasoutstanding) {
+-
+-            notice(get_string('cannotentercourse', 'core_coursecondition', $hasoutstanding), "{$CFG->wwwroot}/course/view.php?id={$course->id}");
+-
+-          }
+-
+-        }
+-
+-   }
+-//end
+ 
+     // is the user enrolled?
+     if ($course->id == SITEID) {
