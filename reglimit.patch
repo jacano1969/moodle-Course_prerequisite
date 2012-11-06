@@ -1,0 +1,71 @@
+--- enrol/self/lib.php	2012-06-08 15:11:10.167705217 +0500
++++ enrol/self/lib.php	2012-06-08 15:12:57.000000000 +0500
+@@ -169,6 +169,68 @@ class enrol_self_plugin extends enrol_pl
+      */
+     public function enrol_page_hook(stdClass $instance) {
+         global $CFG, $OUTPUT, $SESSION, $USER, $DB;
++        //Checking Course registration limit//Added By Hina Yousuf
++		
++		$month = (int)  date('m');
++		if($month==6 || $month==7 || $month==8 ){
++			$reqcount=2;
++			$currentSemester=strtotime("-3 months", time());
++		}else{
++			$reqcount=4;
++			$currentSemester=strtotime("-6 months", time());
++		}
++		$sql="SELECT e.courseid as courseid, fullname,e.timecreated as timecreated
++					    FROM mdl_user_enrolments ue
++					    JOIN mdl_enrol e ON ( e.id = ue.enrolid )
++					    JOIN mdl_course c ON ( c.id = e.courseid )
++					    AND ue.userid =$USER->id AND c.startdate>$currentSemester";
++		
++		$courses =  $DB->get_records_sql($sql);
++		
++		$sql="SELECT count(*)
++					    FROM mdl_user_enrolments ue
++					    JOIN mdl_enrol e ON ( e.id = ue.enrolid )
++					    JOIN mdl_course c ON ( c.id = e.courseid )
++					    AND ue.userid =$USER->id AND c.startdate>$currentSemester";
++		$coursecount=$DB->count_records_sql($sql,array());
++		
++
++		foreach($courses as $course){
++			
++			$class=$DB->get_record_sql("SELECT name,id from {course_categories} ct WHERE id  =(SELECT category from {course} c where id=$course->courseid)");
++			break;
++
++		}
++		$string = $class->name;
++		$spring = "Spring";
++		$fall = "Fall";
++		$summer = "Summer";
++		if(strstr($string, $spring) ==true || strstr($string, $fall) ==true){
++			
++			$reqcount=4;
++		}
++		if(strstr($string, $summer) ==true){
++			
++		}
++		$sql="SELECT count(*)
++					    FROM mdl_user_enrolments ue
++					    JOIN mdl_enrol e ON ( e.id = ue.enrolid )
++					    JOIN mdl_course c ON ( c.id = e.courseid )
++					    AND ue.userid =$USER->id";
++		$totalcoursecount=$DB->count_records_sql($sql,array());
++		if($totalcoursecount==19){
++			$reqcount==1;
++		}
++		if($totalcoursecount>=20){
++			return $OUTPUT->notification("You cannot registration more than 20 courses in the EMBA Programme" );
++		}
++		
++		if ($coursecount>=$reqcount) {
++			// exceeded the course registration limit
++			return $OUTPUT->notification("You have exceeded the course registration limit of batch ".$string);
++		}
++		///end of checking course registration limit
++        
+ 
+         if (isguestuser()) {
+             // can not enrol guest!!
